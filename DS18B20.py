@@ -13,8 +13,10 @@ def recupTemp (contenuFich) :
     return temperature
 
 nom_fichier = "/sys/bus/w1/devices/28-{}/w1_slave".format(sys.argv[1])
-with open(nom_fichier) as fichier:
+try:
+ with open(nom_fichier) as fichier:
     contenuFich = fichier.read()
     temperature = recupTemp(contenuFich)
-
-print temperature
+    print temperature
+except:
+    print 0
