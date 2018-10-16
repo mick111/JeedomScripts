@@ -2,16 +2,6 @@
 import os
 import sys
 
-
-def lireFichier (emplacement) :
-    # Ouverture du fichier contenant la temperature
-    fichTemp = open(emplacement)
-    # Lecture du fichier
-    contenu = fichTemp.read()
-    # Fermeture du fichier apres qu'il ai ete lu
-    fichTemp.close()
-    return contenu
-
 def recupTemp (contenuFich) :
     # Supprimer la premiere ligne qui est inutile
     secondeLigne = contenuFich.split("\n")[1]
@@ -22,7 +12,9 @@ def recupTemp (contenuFich) :
     temperature = temperature / 1000
     return temperature
 
-contenuFich = lireFichier("/sys/bus/w1/devices/28-{}/w1_slave".format(sys.argv[1]))
-temperature = recupTemp (contenuFich)
+nom_fichier = "/sys/bus/w1/devices/28-{}/w1_slave".format(sys.argv[1])
+with open(nom_fichier) as fichier:
+    contenuFich = fichier.read()
+    temperature = recupTemp(contenuFich)
 
 print temperature
