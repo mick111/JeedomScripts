@@ -3,6 +3,7 @@ import sys
 import struct
 import json
 import time
+
 p = None
 def connectPeripheral():
   from bluepy.btle import Peripheral
@@ -22,6 +23,7 @@ def connectPeripheral():
 
 
 LiveServiceUUID = "39e1FA00-84a8-11e2-afba-0002a5d5c51b"
+NOTIFICATIONS_TIMER             = "39E1fa06-84a8-11e2-afba-0002a5d5c51b"
 
 SUNLIGHT_UUID                   = "39e1fa01-84a8-11e2-afba-0002a5d5c51b"
 SOIL_EC_UUID                    = "39e1fa02-84a8-11e2-afba-0002a5d5c51b"
@@ -71,6 +73,9 @@ except Exception as e:
   print "Warning during load", e
   cached_values = {}
 
+def activateNotifications(activate):
+    connectPeripheral().getServiceByUUID(LiveServiceUUID).getCharacteristics(NOTIFICATIONS_TIMER)[0].write("\x01" if activate else "\x00")
+
 def getValF32(ServiceUUID,UUID):
   characterisitics = connectPeripheral().getServiceByUUID(ServiceUUID).getCharacteristics(UUID)
   readVal = characterisitics[0].read()
@@ -88,7 +93,7 @@ def convertSunlight(rawValue):
 def convertWaterLevel(rawValue):
     # TODO
     return rawValue
-  
+
 def convertSoilElectricalConductivity(rawValue):
     # TODO: convert raw (0 - 1771) to 0 to 10 (mS/cm)
     soilElectricalConductivity = rawValue
@@ -105,6 +110,7 @@ def convertSoilMoisture(rawValue):
 
 def getVals(args):
   cache_dict = {}
+  activateNotifications(True)
   for arg in args:
     val = None
     if arg == "AIR_TEMPERATURE":
@@ -139,6 +145,7 @@ def getVals(args):
       val = convertWaterLevel(raw)
     if val: cache_dict[arg] = val
   #print cache_dict
+  activateNotifications(False)
   return cache_dict
 
 force_read = False
