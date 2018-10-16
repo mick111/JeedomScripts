@@ -19,4 +19,4 @@ try:
     temperature = recupTemp(contenuFich)
     print temperature
 except:
-    print -1
+    print 1
